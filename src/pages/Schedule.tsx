@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs, query, where, addDoc, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { collection, getDocs, query, where, doc, getDoc, writeBatch } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { handleFirestoreError, OperationType } from '../lib/errorHandling';
 import { useSearchParams, useNavigate } from 'react-router-dom';
@@ -68,8 +68,11 @@ export default function Schedule() {
 
       const selectedModel = models.find(m => m.id === formData.modelId);
 
+      const batch = writeBatch(db);
+
       // Create appointment
-      await addDoc(collection(db, 'appointments'), {
+      const newAppointmentRef = doc(collection(db, 'appointments'));
+      batch.set(newAppointmentRef, {
         ...formData,
         modelName: selectedModel.name,
         status: 'pending',
@@ -78,10 +81,12 @@ export default function Schedule() {
 
       // Update daily count
       if (dailyCountSnap.exists()) {
-        await updateDoc(dailyCountRef, { count: currentCount + 1 });
+        batch.update(dailyCountRef, { count: currentCount + 1 });
       } else {
-        await setDoc(dailyCountRef, { count: 1 });
+        batch.set(dailyCountRef, { count: 1 });
       }
+
+      await batch.commit();
 
       // Open WhatsApp
       const message = `Olá Ana! Gostaria de agendar uma extensão de cílios.\n\n*Nome:* ${formData.clientName}\n*Modelo:* ${selectedModel.name}\n*Data:* ${format(new Date(formData.date + 'T00:00:00'), 'dd/MM/yyyy')}\n*Horário:* ${formData.time}`;
@@ -101,60 +106,62 @@ export default function Schedule() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <div className="bg-white p-8 rounded-3xl shadow-xl border border-pink-100">
-        <h1 className="text-3xl font-bold text-center mb-2">Agende seu Horário</h1>
-        <p className="text-gray-500 text-center mb-8">Preencha os dados abaixo para solicitar seu agendamento.</p>
+      <div className="bg-white p-8 md:p-12 rounded-3xl shadow-2xl shadow-nude-200/50 border border-nude-100">
+        <div className="text-center mb-10">
+          <h1 className="text-4xl font-serif text-nude-900 mb-3">Agende seu Horário</h1>
+          <p className="text-nude-500 font-light">Preencha os dados abaixo para solicitar seu agendamento.</p>
+        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-4">
-            <h2 className="text-xl font-bold text-pink-600 border-b border-pink-100 pb-2">Seus Dados</h2>
+        <form onSubmit={handleSubmit} className="space-y-8">
+          <div className="space-y-5">
+            <h2 className="text-xl font-serif text-gold-600 border-b border-nude-100 pb-3">Seus Dados</h2>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Nome Completo</label>
+              <label className="block text-sm font-medium text-nude-700 mb-2">Nome Completo</label>
               <input
                 type="text"
                 value={formData.clientName}
                 onChange={(e) => setFormData({...formData, clientName: e.target.value})}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none transition-all"
+                className="w-full px-5 py-4 bg-nude-50 border border-nude-200 rounded-xl focus:ring-2 focus:ring-gold-400 focus:border-gold-400 outline-none transition-all"
                 required
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">WhatsApp</label>
+                <label className="block text-sm font-medium text-nude-700 mb-2">WhatsApp</label>
                 <input
                   type="tel"
                   placeholder="(00) 00000-0000"
                   value={formData.clientPhone}
                   onChange={(e) => setFormData({...formData, clientPhone: e.target.value})}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none transition-all"
+                  className="w-full px-5 py-4 bg-nude-50 border border-nude-200 rounded-xl focus:ring-2 focus:ring-gold-400 focus:border-gold-400 outline-none transition-all"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">CPF</label>
+                <label className="block text-sm font-medium text-nude-700 mb-2">CPF</label>
                 <input
                   type="text"
                   placeholder="000.000.000-00"
                   value={formData.clientCpf}
                   onChange={(e) => setFormData({...formData, clientCpf: e.target.value})}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none transition-all"
+                  className="w-full px-5 py-4 bg-nude-50 border border-nude-200 rounded-xl focus:ring-2 focus:ring-gold-400 focus:border-gold-400 outline-none transition-all"
                   required
                 />
               </div>
             </div>
           </div>
 
-          <div className="space-y-4 pt-4">
-            <h2 className="text-xl font-bold text-pink-600 border-b border-pink-100 pb-2">O Agendamento</h2>
+          <div className="space-y-5 pt-4">
+            <h2 className="text-xl font-serif text-gold-600 border-b border-nude-100 pb-3">O Agendamento</h2>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Modelo de Cílios</label>
+              <label className="block text-sm font-medium text-nude-700 mb-2">Modelo de Cílios</label>
               <select
                 value={formData.modelId}
                 onChange={(e) => setFormData({...formData, modelId: e.target.value})}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none transition-all bg-white"
+                className="w-full px-5 py-4 bg-nude-50 border border-nude-200 rounded-xl focus:ring-2 focus:ring-gold-400 focus:border-gold-400 outline-none transition-all appearance-none"
                 required
               >
                 <option value="">Selecione um modelo...</option>
@@ -166,25 +173,25 @@ export default function Schedule() {
               </select>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Data</label>
+                <label className="block text-sm font-medium text-nude-700 mb-2">Data</label>
                 <input
                   type="date"
                   min={new Date().toISOString().split('T')[0]}
                   value={formData.date}
                   onChange={(e) => setFormData({...formData, date: e.target.value})}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none transition-all"
+                  className="w-full px-5 py-4 bg-nude-50 border border-nude-200 rounded-xl focus:ring-2 focus:ring-gold-400 focus:border-gold-400 outline-none transition-all"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Horário</label>
+                <label className="block text-sm font-medium text-nude-700 mb-2">Horário</label>
                 <input
                   type="time"
                   value={formData.time}
                   onChange={(e) => setFormData({...formData, time: e.target.value})}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none transition-all"
+                  className="w-full px-5 py-4 bg-nude-50 border border-nude-200 rounded-xl focus:ring-2 focus:ring-gold-400 focus:border-gold-400 outline-none transition-all"
                   required
                 />
               </div>
@@ -194,7 +201,7 @@ export default function Schedule() {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full bg-black text-white py-4 rounded-xl font-bold text-lg hover:bg-gray-800 transition-colors disabled:opacity-50 mt-8 shadow-lg shadow-gray-200"
+            className="w-full bg-nude-900 text-gold-300 py-4 rounded-xl font-medium text-lg hover:bg-nude-800 transition-colors disabled:opacity-50 mt-10 shadow-xl shadow-nude-200/50 uppercase tracking-wider"
           >
             {submitting ? 'Processando...' : 'Concluir Agendamento'}
           </button>

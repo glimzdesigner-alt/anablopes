@@ -11,7 +11,7 @@ export default function AdminLayout() {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (!user || user.email !== 'pernambucoresenhoso@gmail.com') {
+      if (!user || user.email !== 'admin@anablopes.com') {
         navigate('/admin/login');
       } else {
         setLoading(false);
@@ -32,11 +32,11 @@ export default function AdminLayout() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-100 flex">
+    <div className="min-h-screen bg-nude-50 flex">
       {/* Sidebar */}
-      <aside className="w-64 bg-black text-white flex flex-col">
+      <aside className="w-64 bg-nude-900 text-white flex flex-col">
         <div className="p-6">
-          <h2 className="text-xl font-bold text-pink-300">Admin Studio</h2>
+          <h2 className="text-xl font-serif text-gold-300">Admin Studio</h2>
         </div>
         <nav className="flex-1 px-4 space-y-2">
           {navItems.map((item) => {
@@ -47,7 +47,7 @@ export default function AdminLayout() {
                 key={item.path}
                 to={item.path}
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                  isActive ? 'bg-pink-600 text-white' : 'text-gray-300 hover:bg-gray-800'
+                  isActive ? 'bg-gold-500 text-nude-900 font-medium' : 'text-nude-200 hover:bg-nude-800'
                 }`}
               >
                 <Icon className="w-5 h-5" />
@@ -59,7 +59,7 @@ export default function AdminLayout() {
         <div className="p-4">
           <button
             onClick={() => logout()}
-            className="flex items-center gap-3 px-4 py-3 w-full text-left text-gray-300 hover:bg-gray-800 rounded-lg transition-colors"
+            className="flex items-center gap-3 px-4 py-3 w-full text-left text-nude-200 hover:bg-nude-800 rounded-lg transition-colors"
           >
             <LogOut className="w-5 h-5" />
             Sair

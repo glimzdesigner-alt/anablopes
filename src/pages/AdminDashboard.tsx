@@ -38,33 +38,33 @@ export default function AdminDashboard() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-8">Agendamentos</h1>
+      <h1 className="text-4xl font-serif text-nude-900 mb-8">Agendamentos</h1>
       
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <div className="bg-white rounded-3xl shadow-xl shadow-nude-200/50 border border-nude-100 overflow-hidden">
         {appointments.length === 0 ? (
-          <div className="p-8 text-center text-gray-500">Nenhum agendamento encontrado.</div>
+          <div className="p-8 text-center text-nude-500 font-light">Nenhum agendamento encontrado.</div>
         ) : (
-          <div className="divide-y divide-gray-200">
+          <div className="divide-y divide-nude-100">
             {appointments.map((apt) => (
-              <div key={apt.id} className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div key={apt.id} className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-nude-50 transition-colors">
                 <div>
                   <div className="flex items-center gap-2 mb-2">
-                    <h3 className="text-lg font-semibold">{apt.clientName}</h3>
-                    <span className="px-2 py-1 bg-pink-100 text-pink-800 text-xs rounded-full font-medium">
+                    <h3 className="text-xl font-serif text-nude-900">{apt.clientName}</h3>
+                    <span className="px-3 py-1 bg-nude-100 text-nude-700 text-xs rounded-full font-medium border border-nude-200">
                       {apt.modelName}
                     </span>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
-                    <div className="flex items-center gap-2"><Calendar className="w-4 h-4" /> {apt.date}</div>
-                    <div className="flex items-center gap-2"><Clock className="w-4 h-4" /> {apt.time}</div>
-                    <div className="flex items-center gap-2"><Phone className="w-4 h-4" /> {apt.clientPhone}</div>
-                    <div className="flex items-center gap-2"><User className="w-4 h-4" /> CPF: {apt.clientCpf}</div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-nude-600 font-light">
+                    <div className="flex items-center gap-2"><Calendar className="w-4 h-4 text-gold-500" /> {apt.date}</div>
+                    <div className="flex items-center gap-2"><Clock className="w-4 h-4 text-gold-500" /> {apt.time}</div>
+                    <div className="flex items-center gap-2"><Phone className="w-4 h-4 text-gold-500" /> {apt.clientPhone}</div>
+                    <div className="flex items-center gap-2"><User className="w-4 h-4 text-gold-500" /> CPF: {apt.clientCpf}</div>
                   </div>
                 </div>
                 <div className="flex gap-2">
                   <button
                     onClick={() => handleConfirm(apt)}
-                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
+                    className="px-6 py-3 bg-nude-900 text-gold-300 rounded-xl hover:bg-nude-800 transition-colors text-sm font-medium shadow-lg shadow-nude-200/50"
                   >
                     Confirmar no WhatsApp
                   </button>

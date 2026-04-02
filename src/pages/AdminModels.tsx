@@ -55,79 +55,84 @@ export default function AdminModels() {
   return (
     <div>
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Modelos de Cílios</h1>
+        <div>
+          <h1 className="text-4xl font-serif text-nude-900">Modelos de Cílios</h1>
+          <p className="text-nude-500 font-light">Gerencie os modelos disponíveis</p>
+        </div>
         <button
           onClick={() => setIsAdding(true)}
-          className="flex items-center gap-2 bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 transition-colors"
+          className="flex items-center gap-2 bg-nude-900 text-gold-300 px-6 py-3 rounded-xl hover:bg-nude-800 transition-colors shadow-lg shadow-nude-200/50 font-medium"
         >
           <Plus className="w-5 h-5" /> Adicionar Modelo
         </button>
       </div>
 
       {isAdding && (
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-8 relative">
-          <button onClick={() => setIsAdding(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
-            <X className="w-5 h-5" />
+        <div className="bg-white p-8 rounded-3xl shadow-xl shadow-nude-200/50 border border-nude-100 mb-8 relative">
+          <button onClick={() => setIsAdding(false)} className="absolute top-6 right-6 text-nude-400 hover:text-nude-600 transition-colors">
+            <X className="w-6 h-6" />
           </button>
-          <h2 className="text-xl font-bold mb-4">Novo Modelo</h2>
+          <h2 className="text-2xl font-serif text-nude-900 mb-6">Novo Modelo</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Nome do Modelo</label>
+                <label className="block text-sm font-medium text-nude-700 mb-1">Nome do Modelo</label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-pink-500 focus:border-pink-500 outline-none"
+                  className="w-full px-4 py-3 bg-nude-50 border border-nude-200 rounded-xl focus:ring-2 focus:ring-gold-400 focus:border-gold-400 outline-none transition-all"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Valor (R$)</label>
+                <label className="block text-sm font-medium text-nude-700 mb-1">Valor (R$)</label>
                 <input
                   type="number"
                   step="0.01"
                   value={formData.price}
                   onChange={(e) => setFormData({...formData, price: e.target.value})}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-pink-500 focus:border-pink-500 outline-none"
+                  className="w-full px-4 py-3 bg-nude-50 border border-nude-200 rounded-xl focus:ring-2 focus:ring-gold-400 focus:border-gold-400 outline-none transition-all"
                   required
                 />
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">URL da Imagem</label>
+              <label className="block text-sm font-medium text-nude-700 mb-1">URL da Imagem</label>
               <input
                 type="url"
                 value={formData.imageUrl}
                 onChange={(e) => setFormData({...formData, imageUrl: e.target.value})}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-pink-500 focus:border-pink-500 outline-none"
+                className="w-full px-4 py-3 bg-nude-50 border border-nude-200 rounded-xl focus:ring-2 focus:ring-gold-400 focus:border-gold-400 outline-none transition-all"
                 required
               />
             </div>
-            <button type="submit" className="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-800">
-              Salvar
-            </button>
+            <div className="pt-4">
+              <button type="submit" className="bg-nude-900 text-gold-300 px-8 py-3 rounded-xl font-medium hover:bg-nude-800 transition-colors shadow-lg shadow-nude-200/50">
+                Salvar Modelo
+              </button>
+            </div>
           </form>
         </div>
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {models.map((model) => (
-          <div key={model.id} className={`bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden ${!model.active && 'opacity-60'}`}>
-            <img src={model.imageUrl} alt={model.name} className="w-full h-48 object-cover" />
-            <div className="p-4">
-              <div className="flex justify-between items-start mb-2">
-                <h3 className="text-lg font-bold">{model.name}</h3>
-                <span className="text-pink-600 font-bold">R$ {model.price.toFixed(2)}</span>
+          <div key={model.id} className={`bg-white rounded-3xl shadow-lg shadow-nude-200/50 border border-nude-100 overflow-hidden flex flex-col transition-all hover:shadow-xl ${!model.active && 'opacity-60 grayscale-[0.5]'}`}>
+            <img src={model.imageUrl} alt={model.name} className="w-full h-56 object-cover" />
+            <div className="p-6 flex flex-col flex-1">
+              <div className="flex justify-between items-start mb-4">
+                <h3 className="text-xl font-serif text-nude-900">{model.name}</h3>
+                <span className="text-gold-600 font-medium bg-nude-50 px-3 py-1 rounded-lg border border-nude-100">R$ {model.price.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between items-center mt-4 pt-4 border-t border-gray-100">
+              <div className="flex justify-between items-center mt-auto pt-4 border-t border-nude-100">
                 <button
                   onClick={() => toggleActive(model.id, model.active)}
-                  className={`text-sm font-medium ${model.active ? 'text-green-600' : 'text-gray-500'}`}
+                  className={`text-sm font-medium px-3 py-1.5 rounded-lg transition-colors ${model.active ? 'bg-nude-50 text-nude-700 hover:bg-nude-100' : 'bg-nude-100 text-nude-500 hover:bg-nude-200'}`}
                 >
                   {model.active ? 'Ativo' : 'Inativo'}
                 </button>
-                <button onClick={() => handleDelete(model.id)} className="text-red-500 hover:text-red-700 p-2">
+                <button onClick={() => handleDelete(model.id)} className="text-nude-400 hover:text-red-500 transition-colors p-2 bg-nude-50 rounded-lg hover:bg-red-50">
                   <Trash2 className="w-5 h-5" />
                 </button>
               </div>

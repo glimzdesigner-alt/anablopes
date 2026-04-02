@@ -12,15 +12,20 @@ export default function Home() {
   const [promotions, setPromotions] = useState<any[]>([]);
   const [reviews, setReviews] = useState<any[]>([]);
   const [adminPhone, setAdminPhone] = useState('5581992765391');
+  const [logoUrl, setLogoUrl] = useState('');
+  const [heroBgUrl, setHeroBgUrl] = useState('');
 
   useEffect(() => {
-    // Fetch settings for WhatsApp
+    // Fetch settings for WhatsApp and Appearance
     const fetchSettings = async () => {
       try {
         const docRef = doc(db, 'settings', 'global');
         const docSnap = await getDoc(docRef);
-        if (docSnap.exists() && docSnap.data().adminPhone) {
-          setAdminPhone(docSnap.data().adminPhone);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          if (data.adminPhone) setAdminPhone(data.adminPhone);
+          if (data.logoUrl) setLogoUrl(data.logoUrl);
+          if (data.heroBgUrl) setHeroBgUrl(data.heroBgUrl);
         }
       } catch (error) {
         console.error("Error fetching settings:", error);
@@ -69,11 +74,16 @@ export default function Home() {
     return Math.round(((original - promotional) / original) * 100);
   };
 
+  const defaultHeroBg = "https://images.unsplash.com/photo-1587778082149-bd5b1bf5d3fa?q=80&w=2000&auto=format&fit=crop";
+
   return (
     <div className="space-y-24 pb-12">
       {/* Hero Section */}
       <section className="relative text-center py-24 px-4 bg-nude-900 rounded-3xl overflow-hidden shadow-2xl">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1587778082149-bd5b1bf5d3fa?q=80&w=2000&auto=format&fit=crop')] bg-cover bg-center opacity-20 mix-blend-overlay"></div>
+        <div 
+          className="absolute inset-0 bg-cover bg-center opacity-20 mix-blend-overlay"
+          style={{ backgroundImage: `url('${heroBgUrl || defaultHeroBg}')` }}
+        ></div>
         <div className="absolute inset-0 bg-gradient-to-t from-nude-900 via-nude-900/80 to-transparent"></div>
         
         <div className="relative z-10 max-w-4xl mx-auto">
@@ -83,15 +93,28 @@ export default function Home() {
             transition={{ duration: 0.8 }}
           >
             <div className="flex justify-center mb-8">
-              <div className="w-20 h-20 bg-gradient-to-br from-gold-400 to-gold-600 rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(223,184,133,0.4)]">
-                <Sparkles className="w-10 h-10 text-nude-900" />
-              </div>
+              {logoUrl ? (
+                <img 
+                  src={logoUrl} 
+                  alt="Studio Logo" 
+                  className="h-32 object-contain drop-shadow-2xl"
+                  referrerPolicy="no-referrer"
+                />
+              ) : (
+                <div className="w-20 h-20 bg-gradient-to-br from-gold-400 to-gold-600 rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(223,184,133,0.4)]">
+                  <Sparkles className="w-10 h-10 text-nude-900" />
+                </div>
+              )}
             </div>
-            <h1 className="text-4xl md:text-7xl font-serif text-nude-50 mb-6 leading-tight">
-              Bem-vinda ao <br/>
-              <span className="text-gold-400 italic">Studio Ana B. Lopes</span>
-            </h1>
-            <p className="text-lg md:text-2xl text-nude-200 mb-12 font-light tracking-wide max-w-2xl mx-auto">
+            
+            {!logoUrl && (
+              <h1 className="text-4xl md:text-7xl font-serif text-nude-50 mb-6 leading-tight">
+                Bem-vinda ao <br/>
+                <span className="text-gold-400 italic">Studio Ana B. Lopes</span>
+              </h1>
+            )}
+            
+            <p className="text-lg md:text-2xl text-nude-200 mb-12 font-light tracking-wide max-w-2xl mx-auto mt-6">
               Realce sua beleza natural com nossos cílios exclusivos. Agende seu horário e transforme seu olhar!
             </p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">

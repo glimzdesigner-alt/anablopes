@@ -3,7 +3,7 @@ import { Sparkles, CalendarClock } from 'lucide-react';
 
 export default function Layout() {
   return (
-    <div className="min-h-screen bg-nude-50 text-gray-900 font-sans flex flex-col">
+    <div className="min-h-screen bg-nude-50 text-nude-900 font-sans flex flex-col">
       <header className="bg-white border-b border-nude-200 sticky top-0 z-50">
         <div className="max-w-5xl mx-auto px-6 py-5 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3">

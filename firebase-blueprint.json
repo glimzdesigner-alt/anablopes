@@ -1,0 +1,86 @@
+{
+  "entities": {
+    "Settings": {
+      "title": "Settings",
+      "description": "Global app settings",
+      "type": "object",
+      "properties": {
+        "dailyLimit": { "type": "number" },
+        "adminPhone": { "type": "string" }
+      },
+      "required": ["dailyLimit", "adminPhone"]
+    },
+    "LashModel": {
+      "title": "LashModel",
+      "description": "Lash extension models",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "price": { "type": "number" },
+        "imageUrl": { "type": "string" },
+        "active": { "type": "boolean" }
+      },
+      "required": ["name", "price", "imageUrl", "active"]
+    },
+    "Promotion": {
+      "title": "Promotion",
+      "description": "Promotional banners",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "active": { "type": "boolean" }
+      },
+      "required": ["title", "description", "imageUrl", "active"]
+    },
+    "Appointment": {
+      "title": "Appointment",
+      "description": "Client appointments",
+      "type": "object",
+      "properties": {
+        "clientName": { "type": "string" },
+        "clientPhone": { "type": "string" },
+        "clientCpf": { "type": "string" },
+        "modelId": { "type": "string" },
+        "modelName": { "type": "string" },
+        "date": { "type": "string" },
+        "time": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "confirmed", "cancelled"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["clientName", "clientPhone", "clientCpf", "modelId", "modelName", "date", "time", "status", "createdAt"]
+    },
+    "DailyCount": {
+      "title": "DailyCount",
+      "description": "Number of appointments per day",
+      "type": "object",
+      "properties": {
+        "count": { "type": "number" }
+      },
+      "required": ["count"]
+    }
+  },
+  "firestore": {
+    "/settings/{settingId}": {
+      "schema": { "$ref": "#/entities/Settings" },
+      "description": "App settings document (usually just 'global')"
+    },
+    "/models/{modelId}": {
+      "schema": { "$ref": "#/entities/LashModel" },
+      "description": "Available lash models"
+    },
+    "/promotions/{promoId}": {
+      "schema": { "$ref": "#/entities/Promotion" },
+      "description": "Active promotions"
+    },
+    "/appointments/{appointmentId}": {
+      "schema": { "$ref": "#/entities/Appointment" },
+      "description": "Client appointments"
+    },
+    "/daily_counts/{date}": {
+      "schema": { "$ref": "#/entities/DailyCount" },
+      "description": "Daily appointment counts"
+    }
+  }
+}

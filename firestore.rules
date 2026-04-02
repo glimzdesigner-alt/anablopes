@@ -1,0 +1,43 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    function isAdmin() {
+      return request.auth != null && request.auth.token.email == "pernambucoresenhoso@gmail.com";
+    }
+
+    match /settings/{document} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /models/{document} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /promotions/{document} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /daily_counts/{date} {
+      allow read: if true;
+      allow write: if isAdmin();
+      allow update: if true 
+        && request.resource.data.count == resource.data.count + 1
+        && request.resource.data.count <= get(/databases/$(database)/documents/settings/global).data.dailyLimit;
+      allow create: if true
+        && request.resource.data.count == 1
+        && 1 <= get(/databases/$(database)/documents/settings/global).data.dailyLimit;
+    }
+
+    match /appointments/{document} {
+      allow read: if isAdmin();
+      allow update, delete: if isAdmin();
+      allow create: if true 
+        && request.resource.data.keys().hasAll(['clientName', 'clientPhone', 'clientCpf', 'modelId', 'modelName', 'date', 'time', 'status', 'createdAt'])
+        && request.resource.data.status == 'pending';
+    }
+  }
+}

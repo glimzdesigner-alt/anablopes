@@ -33,8 +33,13 @@ service cloud.firestore {
     }
 
     match /appointments/{document} {
-      allow read: if isAdmin();
-      allow update, delete: if isAdmin();
+      allow read: if true;
+      allow delete: if isAdmin();
+      allow update: if isAdmin() || (
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status']) &&
+        request.resource.data.status == 'cancelled' &&
+        (resource.data.status == 'pending' || resource.data.status == 'confirmed')
+      );
       allow create: if true 
         && request.resource.data.keys().hasAll(['clientName', 'clientPhone', 'clientCpf', 'modelId', 'modelName', 'date', 'time', 'status', 'createdAt'])
         && request.resource.data.status == 'pending';

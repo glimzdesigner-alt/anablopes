@@ -1,5 +1,5 @@
 import { Outlet, Link } from 'react-router-dom';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, CalendarClock } from 'lucide-react';
 
 export default function Layout() {
   return (
@@ -14,9 +14,15 @@ export default function Layout() {
               Ana B. Lopes
             </span>
           </Link>
-          <Link to="/admin/login" className="text-sm font-medium text-nude-500 hover:text-nude-900 transition-colors uppercase tracking-wider">
-            Admin
-          </Link>
+          <div className="flex items-center gap-6">
+            <Link to="/my-bookings" className="flex items-center gap-2 text-sm font-medium text-nude-600 hover:text-gold-600 transition-colors uppercase tracking-wider">
+              <CalendarClock className="w-4 h-4" />
+              <span className="hidden sm:inline">Meus Agendamentos</span>
+            </Link>
+            <Link to="/admin/login" className="text-sm font-medium text-nude-400 hover:text-nude-900 transition-colors uppercase tracking-wider">
+              Admin
+            </Link>
+          </div>
         </div>
       </header>
       <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-10">

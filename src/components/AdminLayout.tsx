@@ -2,7 +2,7 @@ import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { auth, logout } from '../lib/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
-import { LayoutDashboard, Settings, Image, Tag, LogOut } from 'lucide-react';
+import { LayoutDashboard, Settings, Image, Tag, LogOut, MessageSquare } from 'lucide-react';
 
 export default function AdminLayout() {
   const [loading, setLoading] = useState(true);
@@ -28,6 +28,7 @@ export default function AdminLayout() {
     { path: '/admin', icon: LayoutDashboard, label: 'Agendamentos' },
     { path: '/admin/models', icon: Image, label: 'Modelos' },
     { path: '/admin/promotions', icon: Tag, label: 'Promoções' },
+    { path: '/admin/reviews', icon: MessageSquare, label: 'Avaliações' },
     { path: '/admin/settings', icon: Settings, label: 'Configurações' },
   ];
 

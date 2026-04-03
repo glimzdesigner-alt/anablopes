@@ -104,7 +104,7 @@ export default function MyBookings() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-12 space-y-12 relative">
+    <div className="max-w-5xl mx-auto px-4 py-8 md:py-12 space-y-8 md:space-y-12 relative">
       {/* Modal de Confirmação */}
       <AnimatePresence>
         {cancelingId && (
@@ -113,25 +113,25 @@ export default function MyBookings() {
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="bg-white rounded-[40px] p-10 max-w-md w-full shadow-3xl border border-nude-100"
+              className="bg-white rounded-3xl md:rounded-[40px] p-8 md:p-10 max-w-md w-full shadow-3xl border border-nude-100"
             >
-              <div className="w-20 h-20 bg-red-50 text-red-500 rounded-3xl flex items-center justify-center mx-auto mb-8">
-                <AlertCircle className="w-10 h-10" />
+              <div className="w-16 h-16 md:w-20 md:h-20 bg-red-50 text-red-500 rounded-2xl md:rounded-3xl flex items-center justify-center mx-auto mb-6 md:mb-8">
+                <AlertCircle className="w-8 h-8 md:w-10 md:h-10" />
               </div>
-              <h3 className="text-3xl font-serif text-brand-black text-center mb-4">Cancelar Agendamento?</h3>
-              <p className="text-nude-500 font-light text-center mb-10 leading-relaxed">
+              <h3 className="text-2xl md:text-3xl font-serif text-brand-black text-center mb-4">Cancelar Agendamento?</h3>
+              <p className="text-nude-500 font-light text-center mb-8 md:mb-10 leading-relaxed text-sm md:text-base">
                 Tem certeza que deseja cancelar este agendamento? Esta ação não poderá ser desfeita.
               </p>
-              <div className="flex gap-4">
+              <div className="flex flex-col sm:flex-row gap-4">
                 <button
                   onClick={() => setCancelingId(null)}
-                  className="flex-1 py-4 px-6 rounded-2xl font-bold text-brand-black bg-nude-50 hover:bg-nude-100 transition-colors"
+                  className="flex-1 py-4 px-6 rounded-xl md:rounded-2xl font-bold text-brand-black bg-nude-50 hover:bg-nude-100 transition-colors"
                 >
                   Voltar
                 </button>
                 <button
                   onClick={confirmCancel}
-                  className="flex-1 py-4 px-6 rounded-2xl font-bold text-white bg-red-500 hover:bg-red-600 transition-colors shadow-xl shadow-red-500/20"
+                  className="flex-1 py-4 px-6 rounded-xl md:rounded-2xl font-bold text-white bg-red-500 hover:bg-red-600 transition-colors shadow-xl shadow-red-500/20"
                 >
                   Sim, Cancelar
                 </button>
@@ -149,21 +149,21 @@ export default function MyBookings() {
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="bg-white rounded-[40px] p-10 max-w-md w-full shadow-3xl border border-nude-100"
+              className="bg-white rounded-3xl md:rounded-[40px] p-8 md:p-10 max-w-md w-full shadow-3xl border border-nude-100"
             >
-              <div className="flex justify-between items-center mb-10">
-                <h3 className="text-3xl font-serif text-brand-black">Avaliar Atendimento</h3>
+              <div className="flex justify-between items-center mb-8 md:mb-10">
+                <h3 className="text-2xl md:text-3xl font-serif text-brand-black">Avaliar Atendimento</h3>
                 <button onClick={() => setReviewingAppointment(null)} className="w-10 h-10 rounded-full bg-nude-50 flex items-center justify-center text-nude-400 hover:text-brand-black transition-colors">
                   <X className="w-5 h-5" />
                 </button>
               </div>
               
-              <form onSubmit={handleReviewSubmit} className="space-y-8">
+              <form onSubmit={handleReviewSubmit} className="space-y-6 md:space-y-8">
                 <div className="text-center">
-                  <label className="block text-sm font-bold text-brand-black uppercase tracking-widest mb-6">
+                  <label className="block text-xs md:text-sm font-bold text-brand-black uppercase tracking-widest mb-4 md:mb-6">
                     Sua nota para {reviewingAppointment.modelName}
                   </label>
-                  <div className="flex justify-center gap-3">
+                  <div className="flex justify-center gap-2 md:gap-3">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <button
                         key={star}
@@ -172,7 +172,7 @@ export default function MyBookings() {
                         className="transition-all hover:scale-125"
                       >
                         <Star
-                          className={`w-12 h-12 ${
+                          className={`w-10 h-10 md:w-12 md:h-12 ${
                             star <= rating ? "fill-brand-pink text-brand-pink" : "text-nude-200"
                           }`}
                         />
@@ -182,21 +182,21 @@ export default function MyBookings() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-bold text-brand-black uppercase tracking-widest mb-4">
+                  <label className="block text-xs md:text-sm font-bold text-brand-black uppercase tracking-widest mb-4">
                     Seu comentário
                   </label>
                   <textarea
                     value={comment}
                     onChange={(e) => setComment(e.target.value)}
                     placeholder="Conte-nos o que achou do resultado..."
-                    className="w-full px-6 py-5 bg-nude-50 border border-nude-200 rounded-3xl focus:ring-2 focus:ring-brand-pink/20 focus:border-brand-pink outline-none h-40 resize-none text-lg"
+                    className="w-full px-5 md:px-6 py-4 md:py-5 bg-nude-50 border border-nude-200 rounded-2xl md:rounded-3xl focus:ring-2 focus:ring-brand-pink/20 focus:border-brand-pink outline-none h-32 md:h-40 resize-none text-base md:text-lg"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={submittingReview}
-                  className="w-full py-5 bg-brand-black text-white rounded-2xl font-bold text-xl hover:bg-brand-pink transition-all disabled:opacity-50 shadow-xl"
+                  className="w-full py-4 md:py-5 bg-brand-black text-white rounded-xl md:rounded-2xl font-bold text-lg md:text-xl hover:bg-brand-pink transition-all disabled:opacity-50 shadow-xl"
                 >
                   {submittingReview ? "Enviando..." : "Enviar Avaliação"}
                 </button>
@@ -206,20 +206,20 @@ export default function MyBookings() {
         )}
       </AnimatePresence>
 
-      <div className="text-center mb-16">
-        <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-brand-pink/10 mb-6">
-          <Clock className="w-10 h-10 text-brand-pink" />
+      <div className="text-center mb-12 md:mb-16">
+        <div className="inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 rounded-2xl md:rounded-3xl bg-brand-pink/10 mb-4 md:mb-6">
+          <Clock className="w-8 h-8 md:w-10 md:h-10 text-brand-pink" />
         </div>
-        <h1 className="text-4xl md:text-6xl font-serif text-brand-black mb-6">Meus Agendamentos</h1>
-        <p className="text-nude-500 font-light text-xl max-w-xl mx-auto leading-relaxed">
+        <h1 className="text-3xl md:text-6xl font-serif text-brand-black mb-4 md:mb-6">Meus Agendamentos</h1>
+        <p className="text-nude-500 font-light text-lg md:text-xl max-w-xl mx-auto leading-relaxed">
           Digite seu WhatsApp para acompanhar o status dos seus agendamentos.
         </p>
       </div>
 
-      <div className="bg-white p-8 md:p-12 rounded-[48px] shadow-3xl border border-nude-100 mb-16 relative overflow-hidden">
+      <div className="bg-white p-6 md:p-12 rounded-[32px] md:rounded-[48px] shadow-3xl border border-nude-100 mb-12 md:mb-16 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-brand-pink/5 blur-[80px] rounded-full -mr-32 -mt-32"></div>
         
-        <form onSubmit={handleSearch} className="relative z-10 flex flex-col sm:flex-row gap-6">
+        <form onSubmit={handleSearch} className="relative z-10 flex flex-col sm:flex-row gap-4 md:gap-6">
           <div className="flex-1 relative group">
             <Phone className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-nude-400 group-focus-within:text-brand-pink transition-colors" />
             <input
@@ -227,15 +227,15 @@ export default function MyBookings() {
               value={searchPhone}
               onChange={(e) => setSearchPhone(e.target.value)}
               placeholder="Digite seu WhatsApp (ex: 81992765391)"
-              className="w-full pl-14 pr-6 py-5 bg-nude-50 border border-nude-200 rounded-2xl focus:ring-2 focus:ring-brand-pink/20 focus:border-brand-pink outline-none transition-all text-lg"
+              className="w-full pl-14 pr-6 py-4 md:py-5 bg-nude-50 border border-nude-200 rounded-xl md:rounded-2xl focus:ring-2 focus:ring-brand-pink/20 focus:border-brand-pink outline-none transition-all text-base md:text-lg"
               required
             />
           </div>
           <button
             type="submit"
-            className="bg-brand-black text-white px-10 py-5 rounded-2xl font-bold text-xl hover:bg-brand-pink transition-all shadow-xl flex items-center justify-center gap-3 group"
+            className="bg-brand-black text-white px-8 md:px-10 py-4 md:py-5 rounded-xl md:rounded-2xl font-bold text-lg md:text-xl hover:bg-brand-pink transition-all shadow-xl flex items-center justify-center gap-3 group"
           >
-            <Search className="w-6 h-6 group-hover:scale-110 transition-transform" />
+            <Search className="w-5 h-5 md:w-6 md:h-6 group-hover:scale-110 transition-transform" />
             Buscar
           </button>
         </form>

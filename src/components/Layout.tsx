@@ -1,6 +1,7 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { Sparkles, CalendarClock, User, Menu, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Layout() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -77,19 +78,31 @@ export default function Layout() {
         </div>
 
         {/* Mobile Menu */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden absolute top-full left-0 right-0 glass border-b border-brand-pink/10 p-6 space-y-6 animate-in slide-in-from-top duration-300">
-            <Link to="/schedule" className="block text-lg font-bold text-brand-black uppercase tracking-widest">
-              Agendar
-            </Link>
-            <Link to="/my-bookings" className="block text-lg font-bold text-brand-black uppercase tracking-widest">
-              Meus Agendamentos
-            </Link>
-            <Link to="/admin/login" className="block text-lg font-bold text-brand-black uppercase tracking-widest">
-              Admin
-            </Link>
-          </div>
-        )}
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="md:hidden absolute top-full left-0 right-0 glass border-b border-brand-pink/10 overflow-hidden"
+            >
+              <div className="p-6 space-y-4">
+                <Link to="/schedule" className="flex items-center gap-4 p-4 rounded-2xl bg-brand-pink/5 text-brand-black font-bold uppercase tracking-widest text-sm">
+                  <CalendarClock className="w-5 h-5 text-brand-pink" />
+                  Agendar
+                </Link>
+                <Link to="/my-bookings" className="flex items-center gap-4 p-4 rounded-2xl bg-brand-pink/5 text-brand-black font-bold uppercase tracking-widest text-sm">
+                  <User className="w-5 h-5 text-brand-pink" />
+                  Meus Agendamentos
+                </Link>
+                <Link to="/admin/login" className="flex items-center gap-4 p-4 rounded-2xl bg-brand-black/5 text-brand-black font-bold uppercase tracking-widest text-sm">
+                  <Sparkles className="w-5 h-5 text-brand-pink" />
+                  Admin
+                </Link>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </header>
 
       <main className="flex-1 pt-24">
@@ -98,7 +111,7 @@ export default function Layout() {
 
       <footer className="bg-brand-black text-white py-24">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-16 mb-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 mb-16">
             <div className="space-y-6">
               <Link to="/" className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-brand-pink text-white rounded-xl flex items-center justify-center">
@@ -118,12 +131,6 @@ export default function Layout() {
                 <li><Link to="/schedule" className="text-white/70 hover:text-brand-pink transition-colors">Agendar Horário</Link></li>
                 <li><Link to="/my-bookings" className="text-white/70 hover:text-brand-pink transition-colors">Meus Agendamentos</Link></li>
               </ul>
-            </div>
-
-            <div>
-              <h4 className="text-brand-pink font-bold uppercase tracking-widest text-sm mb-8">Contato</h4>
-              <p className="text-white/70 mb-4">Recife, Pernambuco</p>
-              <p className="text-white/70">contato@anablopes.com</p>
             </div>
           </div>
 

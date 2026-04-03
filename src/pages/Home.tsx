@@ -3,7 +3,7 @@ import { collection, onSnapshot, query, where, doc, getDoc } from 'firebase/fire
 import { db } from '../lib/firebase';
 import { handleFirestoreError, OperationType } from '../lib/errorHandling';
 import { Link, useNavigate } from 'react-router-dom';
-import { CalendarHeart, Sparkles, Star, MessageSquare, ArrowRight, MessageCircle, Percent, Calendar, Tag, ShieldCheck, Award, Heart } from 'lucide-react';
+import { CalendarHeart, Sparkles, Star, MessageSquare, ArrowRight, MessageCircle, Percent, Calendar, Tag, ShieldCheck, Award, Heart, Phone } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function Home() {
@@ -12,6 +12,8 @@ export default function Home() {
   const [promotions, setPromotions] = useState<any[]>([]);
   const [reviews, setReviews] = useState<any[]>([]);
   const [adminPhone, setAdminPhone] = useState('5581992765391');
+  const [address, setAddress] = useState('');
+  const [contactEmail, setContactEmail] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
   const [heroBgUrl, setHeroBgUrl] = useState('');
 
@@ -23,6 +25,8 @@ export default function Home() {
         if (docSnap.exists()) {
           const data = docSnap.data();
           if (data.adminPhone) setAdminPhone(data.adminPhone);
+          if (data.address) setAddress(data.address);
+          if (data.contactEmail) setContactEmail(data.contactEmail);
           if (data.logoUrl) setLogoUrl(data.logoUrl);
           if (data.heroBgUrl) setHeroBgUrl(data.heroBgUrl);
         }
@@ -78,7 +82,7 @@ export default function Home() {
   return (
     <div className="space-y-24 pb-24">
       {/* Hero Section */}
-      <section className="relative min-h-[90vh] flex items-center justify-center -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 overflow-hidden bg-brand-black">
+      <section className="relative min-h-[80vh] md:min-h-[90vh] flex items-center justify-center -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 overflow-hidden bg-brand-black">
         <div 
           className="absolute inset-0 bg-cover bg-center scale-105"
           style={{ 
@@ -103,26 +107,26 @@ export default function Home() {
               <span className="text-xs font-bold text-white uppercase tracking-widest">Studio Ana B. Lopes</span>
             </div>
             
-            <h1 className="text-5xl md:text-8xl font-serif text-white mb-8 leading-[1.1] tracking-tight">
-              Agende seu <br/>
+            <h1 className="text-4xl sm:text-5xl md:text-8xl font-serif text-white mb-6 md:mb-8 leading-[1.1] tracking-tight">
+              Agende seu <br className="hidden sm:block"/>
               <span className="text-brand-pink italic">Horário de Cílios</span>
             </h1>
             
-            <p className="text-lg md:text-xl text-white/70 mb-12 font-light tracking-wide max-w-xl leading-relaxed">
-              Tenha cílios fabulosos com nossas especialistas. Realce sua beleza natural com nossos cílios exclusivos.
+            <p className="text-base md:text-xl text-white/70 mb-8 md:mb-12 font-light tracking-wide max-w-xl leading-relaxed">
+              Realce sua beleza natural com nossos cílios exclusivos.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-6">
+            <div className="flex flex-col sm:flex-row gap-4 md:gap-6">
               <Link
                 to="/schedule"
-                className="inline-flex items-center justify-center gap-3 bg-brand-pink text-white px-10 py-5 rounded-2xl font-bold text-lg hover:bg-brand-pink-dark transition-all hover:scale-105 shadow-2xl shadow-brand-pink/30"
+                className="inline-flex items-center justify-center gap-3 bg-brand-pink text-white px-8 md:px-10 py-4 md:py-5 rounded-2xl font-bold text-base md:text-lg hover:bg-brand-pink-dark transition-all hover:scale-105 shadow-2xl shadow-brand-pink/30"
               >
                 Agendar Agora
                 <ArrowRight className="w-5 h-5" />
               </Link>
               <button
                 onClick={handleWhatsAppClick}
-                className="inline-flex items-center justify-center gap-3 glass text-white px-10 py-5 rounded-2xl font-bold text-lg hover:bg-white/20 transition-all"
+                className="inline-flex items-center justify-center gap-3 glass text-white px-8 md:px-10 py-4 md:py-5 rounded-2xl font-bold text-base md:text-lg hover:bg-white/20 transition-all"
               >
                 <MessageCircle className="w-5 h-5" />
                 WhatsApp
@@ -143,8 +147,7 @@ export default function Home() {
                     <Award className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <p className="text-white font-bold">Especialistas Experientes</p>
-                    <p className="text-white/50 text-xs">Artistas de cílios profissionais</p>
+                    <p className="text-white font-bold">Especialista Experiente</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10">
@@ -179,7 +182,7 @@ export default function Home() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {[
-            { icon: Award, title: "Especialistas Experientes", desc: "Artistas de cílios profissionais com anos de experiência." },
+            { icon: Award, title: "Especialista Experiente", desc: "Técnicas avançadas para realçar seu olhar com perfeição." },
             { icon: ShieldCheck, title: "Produtos Premium", desc: "Usamos apenas materiais da mais alta qualidade para seus olhos." },
             { icon: Heart, title: "Ambiente Aconchegante", desc: "Um ambiente relaxante e confortável para o seu dia de beleza." }
           ].map((feature, i) => (
@@ -202,16 +205,16 @@ export default function Home() {
 
       {/* Promotions Section */}
       {promotions.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-24">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
             <div>
               <div className="flex items-center gap-3 mb-4">
-                <Tag className="w-8 h-8 text-brand-pink" />
+                <Tag className="w-6 h-6 md:w-8 md:h-8 text-brand-pink" />
                 <h2 className="text-3xl md:text-5xl font-serif text-brand-black">Promoções Especiais</h2>
               </div>
-              <p className="text-nude-500 font-light text-lg">Aproveite nossas ofertas exclusivas!</p>
+              <p className="text-nude-500 font-light text-base md:text-lg">Aproveite nossas ofertas exclusivas!</p>
             </div>
-            <Link to="/schedule" className="text-brand-pink font-bold flex items-center gap-2 hover:gap-4 transition-all group">
+            <Link to="/schedule" className="text-brand-pink font-bold flex items-center gap-2 hover:gap-4 transition-all group text-sm md:text-base">
               Ver todos os serviços <ArrowRight className="w-5 h-5" />
             </Link>
           </div>
@@ -275,14 +278,14 @@ export default function Home() {
       )}
 
       {/* Models Section */}
-      <section className="bg-brand-black -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-32">
+      <section className="bg-brand-black -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-16 md:py-32">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-20">
+          <div className="text-center mb-12 md:mb-20">
             <div className="flex justify-center items-center gap-3 mb-6">
-              <Sparkles className="w-8 h-8 text-brand-pink" />
-              <h2 className="text-4xl md:text-6xl font-serif text-white">Nossos Modelos</h2>
+              <Sparkles className="w-6 h-6 md:w-8 md:h-8 text-brand-pink" />
+              <h2 className="text-3xl md:text-6xl font-serif text-white">Nossos Modelos</h2>
             </div>
-            <p className="text-white/50 font-light text-xl">Escolha o estilo perfeito para você</p>
+            <p className="text-white/50 font-light text-lg md:text-xl">Escolha o estilo perfeito para você</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
@@ -331,13 +334,13 @@ export default function Home() {
 
       {/* Reviews Section */}
       {reviews.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="text-center mb-20">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+          <div className="text-center mb-12 md:mb-20">
             <div className="flex justify-center items-center gap-3 mb-6">
-              <Star className="w-8 h-8 text-brand-pink fill-brand-pink" />
-              <h2 className="text-4xl md:text-6xl font-serif text-brand-black">Depoimentos</h2>
+              <Star className="w-6 h-6 md:w-8 md:h-8 text-brand-pink fill-brand-pink" />
+              <h2 className="text-3xl md:text-6xl font-serif text-brand-black">Depoimentos</h2>
             </div>
-            <p className="text-nude-500 font-light text-xl">A satisfação de quem já transformou o olhar conosco</p>
+            <p className="text-nude-500 font-light text-lg md:text-xl">A satisfação de quem já transformou o olhar conosco</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
@@ -380,24 +383,98 @@ export default function Home() {
         </section>
       )}
 
+      {/* Location Section */}
+      {(address || contactEmail) && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              className="space-y-8"
+            >
+              <div>
+                <h2 className="text-3xl md:text-5xl font-serif text-brand-black mb-6">Nossa Localização</h2>
+                <p className="text-nude-500 font-light text-lg leading-relaxed">
+                  Venha nos visitar e desfrutar de um momento único de beleza e relaxamento.
+                </p>
+              </div>
+
+              <div className="space-y-6">
+                {address && (
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-brand-pink/10 flex items-center justify-center text-brand-pink shrink-0">
+                      <MessageCircle className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-brand-black uppercase tracking-widest mb-1">Endereço</p>
+                      <p className="text-nude-600 font-light">{address}</p>
+                    </div>
+                  </div>
+                )}
+
+                {contactEmail && (
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-brand-pink/10 flex items-center justify-center text-brand-pink shrink-0">
+                      <MessageCircle className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-brand-black uppercase tracking-widest mb-1">E-mail</p>
+                      <p className="text-nude-600 font-light">{contactEmail}</p>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-brand-pink/10 flex items-center justify-center text-brand-pink shrink-0">
+                    <Phone className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-brand-black uppercase tracking-widest mb-1">WhatsApp</p>
+                    <p className="text-nude-600 font-light">{adminPhone}</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {address && (
+              <motion.div
+                initial={{ opacity: 0, x: 30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                className="h-[400px] md:h-[500px] rounded-[40px] overflow-hidden shadow-2xl border border-nude-100 relative group"
+              >
+                <iframe
+                  width="100%"
+                  height="100%"
+                  frameBorder="0"
+                  style={{ border: 0 }}
+                  src={`https://maps.google.com/maps?q=${encodeURIComponent(address)}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
+                  allowFullScreen
+                  className="grayscale hover:grayscale-0 transition-all duration-700"
+                ></iframe>
+              </motion.div>
+            )}
+          </div>
+        </section>
+      )}
+
       {/* CTA Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="relative py-32 px-8 bg-brand-black rounded-[64px] overflow-hidden shadow-3xl text-center">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-24">
+        <div className="relative py-16 md:py-32 px-6 md:px-8 bg-brand-black rounded-[32px] md:rounded-[64px] overflow-hidden shadow-3xl text-center">
           <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1587778082149-bd5b1bf5d3fa?q=80&w=2000&auto=format&fit=crop')] bg-cover bg-center opacity-10 mix-blend-overlay"></div>
           <div className="relative z-10 max-w-3xl mx-auto">
-            <Sparkles className="w-20 h-20 mx-auto mb-10 text-brand-pink" />
-            <h2 className="text-4xl md:text-7xl font-serif text-white mb-8 leading-tight">
-              Pronta para <br/>
+            <Sparkles className="w-12 h-12 md:w-20 md:h-20 mx-auto mb-8 md:mb-10 text-brand-pink" />
+            <h2 className="text-3xl md:text-7xl font-serif text-white mb-6 md:mb-8 leading-tight">
+              Pronta para <br className="md:hidden"/>
               <span className="text-brand-pink italic">transformar seu olhar?</span>
             </h2>
-            <p className="text-xl text-white/60 mb-12 font-light leading-relaxed">
+            <p className="text-lg md:text-xl text-white/60 mb-8 md:mb-12 font-light leading-relaxed">
               Agende seu horário agora e descubra a beleza que você merece!
             </p>
             <Link
               to="/schedule"
-              className="inline-flex items-center justify-center gap-4 bg-brand-pink text-white px-12 py-6 rounded-3xl font-bold text-2xl hover:bg-brand-pink-dark transition-all hover:scale-105 shadow-2xl shadow-brand-pink/40"
+              className="inline-flex items-center justify-center gap-4 bg-brand-pink text-white px-8 md:px-12 py-4 md:py-6 rounded-2xl md:rounded-3xl font-bold text-lg md:text-2xl hover:bg-brand-pink-dark transition-all hover:scale-105 shadow-2xl shadow-brand-pink/40"
             >
-              <CalendarHeart className="w-8 h-8" />
+              <CalendarHeart className="w-6 h-6 md:w-8 md:h-8" />
               Agendar Agora
             </Link>
           </div>

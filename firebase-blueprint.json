@@ -6,7 +6,9 @@
       "type": "object",
       "properties": {
         "dailyLimit": { "type": "number" },
-        "adminPhone": { "type": "string" }
+        "adminPhone": { "type": "string" },
+        "address": { "type": "string" },
+        "contactEmail": { "type": "string" }
       },
       "required": ["dailyLimit", "adminPhone"]
     },
@@ -49,7 +51,7 @@
         "status": { "type": "string", "enum": ["pending", "confirmed", "cancelled"] },
         "createdAt": { "type": "string", "format": "date-time" }
       },
-      "required": ["clientName", "clientPhone", "clientCpf", "modelId", "modelName", "date", "time", "status", "createdAt"]
+      "required": ["clientName", "clientPhone", "modelId", "modelName", "date", "time", "status", "createdAt"]
     },
     "DailyCount": {
       "title": "DailyCount",

@@ -8,6 +8,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 export default function AdminSettings() {
   const [dailyLimit, setDailyLimit] = useState(10);
   const [adminPhone, setAdminPhone] = useState('5581992765391');
+  const [address, setAddress] = useState('');
+  const [contactEmail, setContactEmail] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
   const [heroBgUrl, setHeroBgUrl] = useState('');
   const [workingDays, setWorkingDays] = useState({
@@ -41,6 +43,8 @@ export default function AdminSettings() {
           const data = docSnap.data();
           setDailyLimit(data.dailyLimit || 10);
           setAdminPhone(data.adminPhone || '5581992765391');
+          setAddress(data.address || '');
+          setContactEmail(data.contactEmail || '');
           setLogoUrl(data.logoUrl || '');
           setHeroBgUrl(data.heroBgUrl || '');
           if (data.workingDays) {
@@ -61,6 +65,8 @@ export default function AdminSettings() {
       await setDoc(doc(db, 'settings', 'global'), {
         dailyLimit: Number(dailyLimit),
         adminPhone,
+        address,
+        contactEmail,
         logoUrl,
         heroBgUrl,
         workingDays
@@ -212,6 +218,35 @@ export default function AdminSettings() {
                   </div>
                   <p className="text-xs text-nude-400 font-light italic">
                     Exemplo: 5581992765391 (55 = Brasil, 81 = DDD)
+                  </p>
+                </div>
+
+                <div className="space-y-3">
+                  <label className="block text-sm font-bold text-brand-black uppercase tracking-widest">
+                    E-mail de Contato
+                  </label>
+                  <input
+                    type="email"
+                    placeholder="contato@anablopes.com"
+                    value={contactEmail}
+                    onChange={(e) => setContactEmail(e.target.value)}
+                    className="w-full px-6 py-4 bg-nude-50 border border-nude-200 rounded-2xl focus:ring-2 focus:ring-brand-pink/20 focus:border-brand-pink outline-none transition-all"
+                  />
+                </div>
+
+                <div className="space-y-3 md:col-span-2">
+                  <label className="block text-sm font-bold text-brand-black uppercase tracking-widest">
+                    Endereço Completo
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Rua Exemplo, 123 - Bairro, Cidade - PE"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    className="w-full px-6 py-4 bg-nude-50 border border-nude-200 rounded-2xl focus:ring-2 focus:ring-brand-pink/20 focus:border-brand-pink outline-none transition-all"
+                  />
+                  <p className="text-xs text-nude-400 font-light italic">
+                    Este endereço será usado para exibir o mapa na página inicial.
                   </p>
                 </div>
               </div>

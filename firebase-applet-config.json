@@ -1,9 +1,8 @@
 {
-  "projectId": "studioanablopes-d3208",
-  "appId": "1:625038264003:web:3c46af5527d87e5f164476",
   "apiKey": "AIzaSyDWKHEUDt0grEK_UxIgRjPPGpUaROcJYOc",
   "authDomain": "studioanablopes-d3208.firebaseapp.com",
+  "projectId": "studioanablopes-d3208",
   "storageBucket": "studioanablopes-d3208.firebasestorage.app",
   "messagingSenderId": "625038264003",
-  "measurementId": ""
+  "appId": "1:625038264003:web:3c46af5527d87e5f164476"
 }

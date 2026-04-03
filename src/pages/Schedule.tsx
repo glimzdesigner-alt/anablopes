@@ -7,7 +7,8 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/style.css';
-import { Clock, Calendar as CalendarIcon, Sparkles } from 'lucide-react';
+import { Clock, Calendar as CalendarIcon, Sparkles, User, Phone, CreditCard, CheckCircle2 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export default function Schedule() {
   const [searchParams] = useSearchParams();
@@ -105,7 +106,6 @@ export default function Schedule() {
     return confirmedAppointments >= (settings.dailyLimit || 5);
   };
 
-  // For now, assume working days are Monday to Saturday
   const isWorkingDay = (date: Date) => {
     const day = date.getDay();
     return day !== 0; // Sunday is 0
@@ -181,82 +181,99 @@ export default function Schedule() {
     }
   };
 
-  if (loading) return <div className="text-center py-12">Carregando...</div>;
+  if (loading) return (
+    <div className="flex items-center justify-center min-h-[60vh]">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-pink"></div>
+    </div>
+  );
 
   const minDate = new Date();
   minDate.setHours(0, 0, 0, 0);
 
   return (
-    <div className="max-w-3xl mx-auto">
-      <div className="bg-white p-8 md:p-12 rounded-3xl shadow-2xl shadow-nude-200/50 border border-nude-100">
-        <div className="text-center mb-10">
-          <div className="flex justify-center items-center gap-3 mb-4">
-            <CalendarIcon className="w-10 h-10 text-gold-500" />
-            <h1 className="text-4xl font-serif text-nude-900">Agendar Horário</h1>
-          </div>
-          <p className="text-nude-500 font-light">Preencha os dados abaixo para solicitar seu agendamento.</p>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-10">
-          <div className="space-y-6">
-            <h2 className="text-2xl font-serif text-gold-600 border-b border-nude-100 pb-3 flex items-center gap-2">
-              <Sparkles className="w-5 h-5" />
-              Seus Dados
-            </h2>
-            
-            <div>
-              <label className="block text-sm font-medium text-nude-700 mb-2">Nome Completo *</label>
-              <input
-                type="text"
-                value={formData.clientName}
-                onChange={(e) => setFormData({...formData, clientName: e.target.value})}
-                className="w-full px-5 py-4 bg-nude-50 border border-nude-200 rounded-xl focus:ring-2 focus:ring-gold-400 focus:border-gold-400 outline-none transition-all"
-                required
-              />
+    <div className="max-w-4xl mx-auto px-4 py-12">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-white p-8 md:p-16 rounded-[48px] shadow-3xl border border-nude-100 relative overflow-hidden"
+      >
+        {/* Decorative Background Element */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-brand-pink/5 blur-[80px] rounded-full -mr-32 -mt-32"></div>
+        
+        <div className="relative z-10">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-brand-pink/10 mb-6">
+              <CalendarIcon className="w-10 h-10 text-brand-pink" />
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-nude-700 mb-2">WhatsApp *</label>
-                <input
-                  type="tel"
-                  placeholder="(00) 00000-0000"
-                  value={formData.clientPhone}
-                  onChange={(e) => setFormData({...formData, clientPhone: e.target.value})}
-                  className="w-full px-5 py-4 bg-nude-50 border border-nude-200 rounded-xl focus:ring-2 focus:ring-gold-400 focus:border-gold-400 outline-none transition-all"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-nude-700 mb-2">CPF *</label>
-                <input
-                  type="text"
-                  placeholder="000.000.000-00"
-                  value={formData.clientCpf}
-                  onChange={(e) => setFormData({...formData, clientCpf: e.target.value})}
-                  className="w-full px-5 py-4 bg-nude-50 border border-nude-200 rounded-xl focus:ring-2 focus:ring-gold-400 focus:border-gold-400 outline-none transition-all"
-                  required
-                />
-              </div>
-            </div>
+            <h1 className="text-4xl md:text-6xl font-serif text-brand-black mb-6">Agendar Horário</h1>
+            <p className="text-nude-500 font-light text-xl max-w-xl mx-auto leading-relaxed">
+              Preencha os dados abaixo para solicitar seu agendamento e realçar sua beleza.
+            </p>
           </div>
 
-          <div className="space-y-6 pt-4">
-            <h2 className="text-2xl font-serif text-gold-600 border-b border-nude-100 pb-3 flex items-center gap-2">
-              <Sparkles className="w-5 h-5" />
-              O Serviço
-            </h2>
-            
-            <div>
-              <label className="block text-sm font-medium text-nude-700 mb-4">Escolha o Serviço *</label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <form onSubmit={handleSubmit} className="space-y-16">
+            {/* Step 1: Personal Info */}
+            <div className="space-y-8">
+              <div className="flex items-center gap-4 mb-8">
+                <div className="w-10 h-10 rounded-xl bg-brand-black text-white flex items-center justify-center font-bold">1</div>
+                <h2 className="text-2xl font-serif text-brand-black">Seus Dados</h2>
+              </div>
+              
+              <div className="grid grid-cols-1 gap-8">
+                <div className="relative group">
+                  <User className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-nude-400 group-focus-within:text-brand-pink transition-colors" />
+                  <input
+                    type="text"
+                    placeholder="Nome Completo *"
+                    value={formData.clientName}
+                    onChange={(e) => setFormData({...formData, clientName: e.target.value})}
+                    className="w-full pl-14 pr-6 py-5 bg-nude-50 border border-nude-200 rounded-2xl focus:ring-2 focus:ring-brand-pink/20 focus:border-brand-pink outline-none transition-all text-lg"
+                    required
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="relative group">
+                    <Phone className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-nude-400 group-focus-within:text-brand-pink transition-colors" />
+                    <input
+                      type="tel"
+                      placeholder="WhatsApp *"
+                      value={formData.clientPhone}
+                      onChange={(e) => setFormData({...formData, clientPhone: e.target.value})}
+                      className="w-full pl-14 pr-6 py-5 bg-nude-50 border border-nude-200 rounded-2xl focus:ring-2 focus:ring-brand-pink/20 focus:border-brand-pink outline-none transition-all text-lg"
+                      required
+                    />
+                  </div>
+                  <div className="relative group">
+                    <CreditCard className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-nude-400 group-focus-within:text-brand-pink transition-colors" />
+                    <input
+                      type="text"
+                      placeholder="CPF *"
+                      value={formData.clientCpf}
+                      onChange={(e) => setFormData({...formData, clientCpf: e.target.value})}
+                      className="w-full pl-14 pr-6 py-5 bg-nude-50 border border-nude-200 rounded-2xl focus:ring-2 focus:ring-brand-pink/20 focus:border-brand-pink outline-none transition-all text-lg"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 2: Service Selection */}
+            <div className="space-y-8">
+              <div className="flex items-center gap-4 mb-8">
+                <div className="w-10 h-10 rounded-xl bg-brand-black text-white flex items-center justify-center font-bold">2</div>
+                <h2 className="text-2xl font-serif text-brand-black">O Serviço</h2>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {models.map(model => (
                   <label 
                     key={model.id}
-                    className={`flex flex-col p-4 border-2 rounded-xl cursor-pointer transition-all ${
+                    className={`relative flex flex-col p-6 border-2 rounded-[32px] cursor-pointer transition-all group ${
                       formData.modelId === model.id 
-                        ? 'border-gold-500 bg-gold-50/50' 
-                        : 'border-nude-200 hover:border-gold-300 bg-white'
+                        ? 'border-brand-pink bg-brand-pink/5' 
+                        : 'border-nude-100 hover:border-brand-pink/30 bg-white'
                     }`}
                   >
                     <input 
@@ -268,126 +285,142 @@ export default function Schedule() {
                       className="sr-only"
                       required
                     />
-                    {model.imageUrl && (
-                      <img
-                        src={model.imageUrl}
-                        alt={model.name}
-                        className="w-full h-32 object-cover rounded-lg mb-3"
-                      />
+                    {formData.modelId === model.id && (
+                      <CheckCircle2 className="absolute top-4 right-4 w-6 h-6 text-brand-pink" />
                     )}
-                    <span className="font-serif text-lg text-nude-900">{model.name}</span>
-                    <span className="text-xl font-bold text-gold-600 mt-2">
+                    {model.imageUrl && (
+                      <div className="h-40 overflow-hidden rounded-2xl mb-6">
+                        <img
+                          src={model.imageUrl}
+                          alt={model.name}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        />
+                      </div>
+                    )}
+                    <span className="font-serif text-2xl text-brand-black mb-2">{model.name}</span>
+                    <span className="text-2xl font-bold text-brand-pink">
                       R$ {model.price.toFixed(2)}
                     </span>
                   </label>
                 ))}
               </div>
             </div>
-          </div>
 
-          <div className="space-y-6 pt-4">
-            <h2 className="text-2xl font-serif text-gold-600 border-b border-nude-100 pb-3 flex items-center gap-2">
-              <CalendarIcon className="w-5 h-5" />
-              Data e Horário
-            </h2>
-            
-            <div>
-              <label className="block text-sm font-medium text-nude-700 mb-4 text-center">Escolha a Data *</label>
-              <div className="flex justify-center">
-                <style>{`
-                  .rdp-root {
-                    --rdp-accent-color: #d4af37;
-                    --rdp-background-color: #fdfbf7;
-                    --rdp-accent-background-color: #fdfbf7;
-                    --rdp-day_button-border-radius: 0.5rem;
-                    --rdp-selected-border: 2px solid #d4af37;
-                  }
-                  .rdp-day_selected, .rdp-day_selected:focus-visible, .rdp-day_selected:hover {
-                    background-color: #d4af37;
-                    color: white;
-                    font-weight: bold;
-                  }
-                  .rdp-day_button:hover:not([disabled]):not(.rdp-day_selected) {
-                    background-color: #fdfbf7;
-                    color: #d4af37;
-                  }
-                `}</style>
-                <div className="bg-white p-4 rounded-2xl border border-nude-200 shadow-sm">
-                  <DayPicker
-                    mode="single"
-                    selected={selectedDate}
-                    onSelect={(date) => {
-                      setSelectedDate(date);
-                      setFormData({...formData, time: ''});
-                    }}
-                    disabled={(date) => {
-                      if (date < minDate) return true;
-                      return !isWorkingDay(date);
-                    }}
-                    locale={ptBR}
-                    className="font-sans"
-                  />
+            {/* Step 3: Date & Time */}
+            <div className="space-y-8">
+              <div className="flex items-center gap-4 mb-8">
+                <div className="w-10 h-10 rounded-xl bg-brand-black text-white flex items-center justify-center font-bold">3</div>
+                <h2 className="text-2xl font-serif text-brand-black">Data e Horário</h2>
+              </div>
+              
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+                <div className="flex flex-col items-center">
+                  <style>{`
+                    .rdp-root {
+                      --rdp-accent-color: #ff4d8d;
+                      --rdp-background-color: #fff5f8;
+                      --rdp-day_button-border-radius: 1rem;
+                    }
+                    .rdp-day_selected {
+                      background-color: var(--rdp-accent-color) !important;
+                      color: white !important;
+                      font-weight: bold;
+                      box-shadow: 0 10px 20px rgba(255, 77, 141, 0.3);
+                    }
+                    .rdp-day_button:hover:not([disabled]):not(.rdp-day_selected) {
+                      background-color: var(--rdp-background-color);
+                      color: var(--rdp-accent-color);
+                    }
+                    .rdp-month_caption {
+                      font-family: 'Playfair Display', serif;
+                      font-size: 1.25rem;
+                      margin-bottom: 1rem;
+                    }
+                  `}</style>
+                  <div className="bg-nude-50 p-6 rounded-[32px] border border-nude-100 shadow-inner">
+                    <DayPicker
+                      mode="single"
+                      selected={selectedDate}
+                      onSelect={(date) => {
+                        setSelectedDate(date);
+                        setFormData({...formData, time: ''});
+                      }}
+                      disabled={(date) => {
+                        if (date < minDate) return true;
+                        return !isWorkingDay(date);
+                      }}
+                      locale={ptBR}
+                      className="font-sans"
+                    />
+                  </div>
+                  {selectedDate && isDateFull() && (
+                    <p className="text-red-500 text-sm mt-4 font-medium">
+                      Esta data já está com capacidade máxima.
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-6">
+                  {selectedDate && !isDateFull() ? (
+                    <div className="grid grid-cols-3 gap-3">
+                      {getAvailableTimes().map((time) => {
+                        const available = isTimeAvailable(time);
+                        const isSelected = formData.time === time;
+                        return (
+                          <label
+                            key={time}
+                            className={`flex flex-col items-center justify-center p-4 border-2 rounded-2xl cursor-pointer transition-all ${
+                              !available
+                                ? "opacity-30 cursor-not-allowed bg-nude-100 border-nude-200"
+                                : isSelected
+                                ? "border-brand-pink bg-brand-pink text-white shadow-xl shadow-brand-pink/20"
+                                : "border-nude-100 hover:border-brand-pink/30 bg-white text-brand-black"
+                            }`}
+                          >
+                            <input
+                              type="radio"
+                              name="time"
+                              value={time}
+                              checked={isSelected}
+                              onChange={(e) => setFormData({...formData, time: e.target.value})}
+                              disabled={!available}
+                              className="sr-only"
+                              required
+                            />
+                            <Clock className={`w-4 h-4 mb-1 ${isSelected ? 'text-white' : 'text-brand-pink'}`} />
+                            <span className="font-bold">{time}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="h-full flex flex-col items-center justify-center p-12 bg-nude-50 rounded-[32px] border border-dashed border-nude-200 text-nude-400 text-center">
+                      <CalendarIcon className="w-12 h-12 mb-4 opacity-20" />
+                      <p>Selecione uma data para ver os horários disponíveis</p>
+                    </div>
+                  )}
                 </div>
               </div>
-              {selectedDate && isDateFull() && (
-                <p className="text-red-500 text-sm mt-3 text-center font-medium">
-                  Esta data já está com capacidade máxima. Escolha outra data.
-                </p>
-              )}
             </div>
 
-            {selectedDate && !isDateFull() && (
-              <div className="pt-6">
-                <label className="block text-sm font-medium text-nude-700 mb-4 text-center">Horário Disponível *</label>
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
-                  {getAvailableTimes().map((time) => {
-                    const available = isTimeAvailable(time);
-                    const isSelected = formData.time === time;
-                    return (
-                      <label
-                        key={time}
-                        className={`flex items-center justify-center gap-2 p-3 border-2 rounded-xl cursor-pointer transition-all ${
-                          !available
-                            ? "opacity-40 cursor-not-allowed bg-nude-100 border-nude-200"
-                            : isSelected
-                            ? "border-gold-500 bg-gold-50 text-gold-700 font-medium"
-                            : "border-nude-200 hover:border-gold-300 bg-white text-nude-700"
-                        }`}
-                      >
-                        <input
-                          type="radio"
-                          name="time"
-                          value={time}
-                          checked={isSelected}
-                          onChange={(e) => setFormData({...formData, time: e.target.value})}
-                          disabled={!available}
-                          className="sr-only"
-                          required
-                        />
-                        <Clock className="w-4 h-4" />
-                        {time}
-                      </label>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-          </div>
-
-          <button
-            type="submit"
-            disabled={submitting || !selectedDate || !formData.time}
-            className="w-full bg-nude-900 text-gold-300 py-5 rounded-xl font-medium text-lg hover:bg-nude-800 transition-colors disabled:opacity-50 mt-10 shadow-xl shadow-nude-200/50 uppercase tracking-wider flex items-center justify-center gap-2"
-          >
-            {submitting ? 'Processando...' : (
-              <>
-                <CalendarIcon className="w-5 h-5" />
-                Confirmar Agendamento
-              </>
-            )}
-          </button>
-        </form>
-      </div>
+            <button
+              type="submit"
+              disabled={submitting || !selectedDate || !formData.time}
+              className="w-full bg-brand-black text-white py-6 rounded-[24px] font-bold text-2xl hover:bg-brand-pink transition-all disabled:opacity-50 mt-12 shadow-2xl flex items-center justify-center gap-4 group"
+            >
+              {submitting ? (
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"></div>
+              ) : (
+                <>
+                  <Sparkles className="w-8 h-8 group-hover:scale-110 transition-transform" />
+                  Confirmar Agendamento
+                </>
+              )}
+            </button>
+          </form>
+        </div>
+      </motion.div>
     </div>
   );
 }
+

@@ -5,29 +5,46 @@
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-serif: "Playfair Display", ui-serif, Georgia, serif;
   
-  /* Gold */
-  --color-gold-100: #fdfaf6;
-  --color-gold-200: #f9f1e6;
-  --color-gold-300: #f2e1c8;
-  --color-gold-400: #e8cda5;
-  --color-gold-500: #dcb67e;
-  --color-gold-600: #c99a55;
-  --color-gold-700: #a87b3f;
+  /* Brand Colors */
+  --color-brand-pink: #ff6b9d;
+  --color-brand-pink-light: #ff8fb4;
+  --color-brand-pink-dark: #e65a8a;
   
-  /* Pink to Black (Replacing Nude for the requested theme) */
-  --color-nude-50: #fff5f8; /* Very light pink */
-  --color-nude-100: #ffe4ec; /* Light pink */
-  --color-nude-200: #ffcce0; /* Soft pink */
-  --color-nude-300: #ff99c2; /* Pink */
-  --color-nude-400: #9e9498; /* Muted gray-pink for hints */
-  --color-nude-500: #e63980; /* Deep pink */
-  --color-nude-600: #524d50; /* Warm gray */
-  --color-nude-700: #3d393b; /* Dark warm gray */
-  --color-nude-800: #292527; /* Almost black */
-  --color-nude-900: #141112; /* Rich warm black */
+  --color-brand-black: #121212;
+  --color-brand-gray: #1a1a1a;
+  --color-brand-gray-light: #2a2a2a;
+  
+  /* Nude/Pinkish Grays for compatibility with existing code */
+  --color-nude-50: #ffffff;
+  --color-nude-100: #f8f8f8;
+  --color-nude-200: #eeeeee;
+  --color-nude-300: #dddddd;
+  --color-nude-400: #999999;
+  --color-nude-500: #666666;
+  --color-nude-600: #444444;
+  --color-nude-700: #222222;
+  --color-nude-800: #1a1a1a;
+  --color-nude-900: #121212;
+
+  /* Gold accents */
+  --color-gold-500: #dcb67e;
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-white/10 backdrop-blur-md border border-white/20;
+  }
+  .glass-dark {
+    @apply bg-black/40 backdrop-blur-lg border border-white/10;
+  }
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-white to-brand-pink-light;
+  }
 }
 
 body {
-  background-color: var(--color-nude-50);
-  color: var(--color-nude-900);
+  background-color: #ffffff;
+  color: #121212;
+  -webkit-font-smoothing: antialiased;
 }
+

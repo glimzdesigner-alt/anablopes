@@ -44,5 +44,14 @@ service cloud.firestore {
         && request.resource.data.keys().hasAll(['clientName', 'clientPhone', 'clientCpf', 'modelId', 'modelName', 'date', 'time', 'status', 'createdAt'])
         && request.resource.data.status == 'pending';
     }
+
+    match /reviews/{document} {
+      allow read: if isAdmin() || resource.data.approved == true;
+      allow create: if true
+        && request.resource.data.keys().hasAll(['clientName', 'rating', 'approved', 'createdAt'])
+        && request.resource.data.approved == false
+        && request.resource.data.rating >= 1 && request.resource.data.rating <= 5;
+      allow update, delete: if isAdmin();
+    }
   }
 }

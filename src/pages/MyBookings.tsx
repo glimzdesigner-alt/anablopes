@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { collection, query, where, getDocs, doc, updateDoc } from "firebase/firestore";
+import { collection, query, where, getDocs, doc, updateDoc, addDoc } from "firebase/firestore";
 import { db } from "../lib/firebase";
 import { handleFirestoreError, OperationType } from "../lib/errorHandling";
-import { Clock, Calendar, Sparkles, AlertCircle, X, Search, Check } from "lucide-react";
+import { Clock, Calendar, Sparkles, AlertCircle, X, Search, Check, Star, User, Phone } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "react-router-dom";
 
 export default function MyBookings() {
   const [searchPhone, setSearchPhone] = useState("");
@@ -13,13 +14,18 @@ export default function MyBookings() {
   const [cancelSuccess, setCancelSuccess] = useState(false);
   const [searched, setSearched] = useState(false);
   const [cancelingId, setCancelingId] = useState<string | null>(null);
+  const [reviewingAppointment, setReviewingAppointment] = useState<any | null>(null);
+  const [rating, setRating] = useState(5);
+  const [comment, setComment] = useState("");
+  const [reviewSuccess, setReviewSuccess] = useState(false);
+  const [submittingReview, setSubmittingReview] = useState(false);
 
   const fetchAppointments = async (phoneNumber: string) => {
     setLoading(true);
     try {
       const q = query(collection(db, "appointments"), where("clientPhone", "==", phoneNumber));
       const querySnapshot = await getDocs(q);
-      const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as any));
       // Sort by date descending
       data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
       setAppointments(data);
@@ -52,16 +58,42 @@ export default function MyBookings() {
     }
   };
 
+  const handleReviewSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!reviewingAppointment) return;
+
+    setSubmittingReview(true);
+    try {
+      await addDoc(collection(db, "reviews"), {
+        clientName: reviewingAppointment.clientName,
+        rating,
+        comment,
+        approved: false,
+        createdAt: new Date().toISOString(),
+        appointmentId: reviewingAppointment.id
+      });
+      setReviewSuccess(true);
+      setTimeout(() => setReviewSuccess(false), 3000);
+      setReviewingAppointment(null);
+      setRating(5);
+      setComment("");
+    } catch (error) {
+      handleFirestoreError(error, OperationType.CREATE, "reviews");
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
+
   const getStatusBadge = (status: string) => {
     const statusConfig: Record<string, { label: string, className: string }> = {
-      pending: { label: "Pendente", className: "bg-gold-100 text-gold-800 border-gold-200" },
-      confirmed: { label: "Confirmado", className: "bg-green-100 text-green-800 border-green-200" },
-      cancelled: { label: "Cancelado", className: "bg-red-100 text-red-800 border-red-200" },
-      completed: { label: "Concluído", className: "bg-blue-100 text-blue-800 border-blue-200" },
+      pending: { label: "Pendente", className: "bg-brand-gray/10 text-brand-black border-brand-black/10" },
+      confirmed: { label: "Confirmado", className: "bg-green-50 text-green-600 border-green-200" },
+      cancelled: { label: "Cancelado", className: "bg-red-50 text-red-600 border-red-200" },
+      completed: { label: "Concluído", className: "bg-brand-pink/10 text-brand-pink border-brand-pink/20" },
     };
     const config = statusConfig[status] || statusConfig.pending;
     return (
-      <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border ${config.className}`}>
+      <span className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border ${config.className}`}>
         {config.label}
       </span>
     );
@@ -72,34 +104,34 @@ export default function MyBookings() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 relative">
+    <div className="max-w-5xl mx-auto px-4 py-12 space-y-12 relative">
       {/* Modal de Confirmação */}
       <AnimatePresence>
         {cancelingId && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-nude-900/40 backdrop-blur-sm">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center px-4 bg-brand-black/60 backdrop-blur-md">
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl border border-nude-100"
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="bg-white rounded-[40px] p-10 max-w-md w-full shadow-3xl border border-nude-100"
             >
-              <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                <AlertCircle className="w-8 h-8" />
+              <div className="w-20 h-20 bg-red-50 text-red-500 rounded-3xl flex items-center justify-center mx-auto mb-8">
+                <AlertCircle className="w-10 h-10" />
               </div>
-              <h3 className="text-2xl font-serif text-nude-900 text-center mb-4">Cancelar Agendamento?</h3>
-              <p className="text-nude-600 font-light text-center mb-8">
+              <h3 className="text-3xl font-serif text-brand-black text-center mb-4">Cancelar Agendamento?</h3>
+              <p className="text-nude-500 font-light text-center mb-10 leading-relaxed">
                 Tem certeza que deseja cancelar este agendamento? Esta ação não poderá ser desfeita.
               </p>
               <div className="flex gap-4">
                 <button
                   onClick={() => setCancelingId(null)}
-                  className="flex-1 py-3 px-4 rounded-xl font-medium text-nude-700 bg-nude-50 hover:bg-nude-100 transition-colors"
+                  className="flex-1 py-4 px-6 rounded-2xl font-bold text-brand-black bg-nude-50 hover:bg-nude-100 transition-colors"
                 >
                   Voltar
                 </button>
                 <button
                   onClick={confirmCancel}
-                  className="flex-1 py-3 px-4 rounded-xl font-medium text-white bg-red-500 hover:bg-red-600 transition-colors shadow-lg shadow-red-500/30"
+                  className="flex-1 py-4 px-6 rounded-2xl font-bold text-white bg-red-500 hover:bg-red-600 transition-colors shadow-xl shadow-red-500/20"
                 >
                   Sim, Cancelar
                 </button>
@@ -109,114 +141,234 @@ export default function MyBookings() {
         )}
       </AnimatePresence>
 
-      <div className="text-center mb-12">
-        <div className="flex justify-center items-center gap-3 mb-4">
-          <Clock className="w-10 h-10 text-gold-500" />
-          <h1 className="text-4xl font-serif text-nude-900">Meus Agendamentos</h1>
+      {/* Modal de Avaliação */}
+      <AnimatePresence>
+        {reviewingAppointment && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center px-4 bg-brand-black/60 backdrop-blur-md">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="bg-white rounded-[40px] p-10 max-w-md w-full shadow-3xl border border-nude-100"
+            >
+              <div className="flex justify-between items-center mb-10">
+                <h3 className="text-3xl font-serif text-brand-black">Avaliar Atendimento</h3>
+                <button onClick={() => setReviewingAppointment(null)} className="w-10 h-10 rounded-full bg-nude-50 flex items-center justify-center text-nude-400 hover:text-brand-black transition-colors">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              
+              <form onSubmit={handleReviewSubmit} className="space-y-8">
+                <div className="text-center">
+                  <label className="block text-sm font-bold text-brand-black uppercase tracking-widest mb-6">
+                    Sua nota para {reviewingAppointment.modelName}
+                  </label>
+                  <div className="flex justify-center gap-3">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() => setRating(star)}
+                        className="transition-all hover:scale-125"
+                      >
+                        <Star
+                          className={`w-12 h-12 ${
+                            star <= rating ? "fill-brand-pink text-brand-pink" : "text-nude-200"
+                          }`}
+                        />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-bold text-brand-black uppercase tracking-widest mb-4">
+                    Seu comentário
+                  </label>
+                  <textarea
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    placeholder="Conte-nos o que achou do resultado..."
+                    className="w-full px-6 py-5 bg-nude-50 border border-nude-200 rounded-3xl focus:ring-2 focus:ring-brand-pink/20 focus:border-brand-pink outline-none h-40 resize-none text-lg"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={submittingReview}
+                  className="w-full py-5 bg-brand-black text-white rounded-2xl font-bold text-xl hover:bg-brand-pink transition-all disabled:opacity-50 shadow-xl"
+                >
+                  {submittingReview ? "Enviando..." : "Enviar Avaliação"}
+                </button>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      <div className="text-center mb-16">
+        <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-brand-pink/10 mb-6">
+          <Clock className="w-10 h-10 text-brand-pink" />
         </div>
-        <p className="text-nude-500 font-light text-lg">Digite seu WhatsApp para ver seus agendamentos</p>
+        <h1 className="text-4xl md:text-6xl font-serif text-brand-black mb-6">Meus Agendamentos</h1>
+        <p className="text-nude-500 font-light text-xl max-w-xl mx-auto leading-relaxed">
+          Digite seu WhatsApp para acompanhar o status dos seus agendamentos.
+        </p>
       </div>
 
-      <div className="bg-white p-8 rounded-3xl shadow-xl shadow-nude-200/50 border border-nude-100 mb-12">
-        <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-4">
-          <input
-            type="tel"
-            value={searchPhone}
-            onChange={(e) => setSearchPhone(e.target.value)}
-            placeholder="Digite seu WhatsApp (ex: 81992765391)"
-            className="flex-1 px-5 py-4 bg-nude-50 border border-nude-200 rounded-xl focus:ring-2 focus:ring-gold-400 focus:border-gold-400 outline-none transition-all text-lg"
-            required
-          />
+      <div className="bg-white p-8 md:p-12 rounded-[48px] shadow-3xl border border-nude-100 mb-16 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-brand-pink/5 blur-[80px] rounded-full -mr-32 -mt-32"></div>
+        
+        <form onSubmit={handleSearch} className="relative z-10 flex flex-col sm:flex-row gap-6">
+          <div className="flex-1 relative group">
+            <Phone className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-nude-400 group-focus-within:text-brand-pink transition-colors" />
+            <input
+              type="tel"
+              value={searchPhone}
+              onChange={(e) => setSearchPhone(e.target.value)}
+              placeholder="Digite seu WhatsApp (ex: 81992765391)"
+              className="w-full pl-14 pr-6 py-5 bg-nude-50 border border-nude-200 rounded-2xl focus:ring-2 focus:ring-brand-pink/20 focus:border-brand-pink outline-none transition-all text-lg"
+              required
+            />
+          </div>
           <button
             type="submit"
-            className="bg-nude-900 text-gold-300 px-8 py-4 rounded-xl font-medium text-lg hover:bg-nude-800 transition-colors shadow-lg shadow-nude-200/50 flex items-center justify-center gap-2"
+            className="bg-brand-black text-white px-10 py-5 rounded-2xl font-bold text-xl hover:bg-brand-pink transition-all shadow-xl flex items-center justify-center gap-3 group"
           >
-            <Search className="w-5 h-5" />
+            <Search className="w-6 h-6 group-hover:scale-110 transition-transform" />
             Buscar
           </button>
         </form>
       </div>
 
-      {cancelSuccess && (
-        <motion.div 
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8 p-4 bg-green-50 border border-green-200 rounded-xl flex items-center gap-3"
-        >
-          <Check className="h-5 w-5 text-green-600" />
-          <p className="text-green-800 font-medium">
-            Agendamento cancelado com sucesso!
-          </p>
-        </motion.div>
-      )}
+      <AnimatePresence>
+        {cancelSuccess && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="p-6 bg-green-50 border border-green-200 rounded-3xl flex items-center gap-4 shadow-lg"
+          >
+            <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center text-white">
+              <Check className="h-6 w-6" />
+            </div>
+            <p className="text-green-800 font-bold text-lg">
+              Agendamento cancelado com sucesso!
+            </p>
+          </motion.div>
+        )}
+
+        {reviewSuccess && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="p-6 bg-brand-pink/5 border border-brand-pink/20 rounded-3xl flex items-center gap-4 shadow-lg"
+          >
+            <div className="w-10 h-10 rounded-full bg-brand-pink flex items-center justify-center text-white">
+              <Star className="h-6 w-6 fill-white" />
+            </div>
+            <p className="text-brand-pink font-bold text-lg">
+              Obrigada! Sua avaliação foi enviada com sucesso.
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {!searched ? (
-        <div className="bg-white rounded-3xl p-12 text-center border border-nude-100 shadow-sm">
-          <Search className="w-16 h-16 text-nude-200 mx-auto mb-4" />
-          <p className="text-nude-500 text-lg font-light mb-2">
+        <div className="bg-nude-50 rounded-[48px] p-20 text-center border border-dashed border-nude-200">
+          <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-8 shadow-xl">
+            <Search className="w-10 h-10 text-nude-200" />
+          </div>
+          <p className="text-nude-500 text-xl font-light">
             Digite seu WhatsApp acima para ver seus agendamentos
           </p>
         </div>
       ) : loading ? (
-        <div className="text-center py-12">
-          <p className="text-nude-500 font-light text-lg">Buscando agendamentos...</p>
+        <div className="flex flex-col items-center justify-center py-20">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-pink mb-6"></div>
+          <p className="text-nude-500 font-light text-xl">Buscando agendamentos...</p>
         </div>
       ) : appointments.length === 0 ? (
-        <div className="bg-white rounded-3xl p-12 text-center border border-nude-100 shadow-sm">
-          <AlertCircle className="w-16 h-16 text-nude-200 mx-auto mb-4" />
-          <p className="text-nude-500 text-lg font-light mb-2">
+        <div className="bg-nude-50 rounded-[48px] p-20 text-center border border-dashed border-nude-200">
+          <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-8 shadow-xl">
+            <AlertCircle className="w-10 h-10 text-nude-200" />
+          </div>
+          <p className="text-nude-500 text-xl font-light mb-4">
             Você ainda não tem agendamentos
           </p>
-          <p className="text-nude-400 font-light">
-            Faça seu primeiro agendamento e transforme seu olhar!
-          </p>
+          <Link to="/schedule" className="text-brand-pink font-bold hover:underline">
+            Faça seu primeiro agendamento agora!
+          </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
           {appointments.map((appointment, index) => (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
               key={appointment.id}
-              className="bg-white rounded-3xl overflow-hidden shadow-lg shadow-nude-200/50 border border-nude-100 flex flex-col hover:shadow-xl transition-all"
+              className="bg-white rounded-[40px] overflow-hidden shadow-2xl border border-nude-100 flex flex-col hover:border-brand-pink/30 transition-all group"
             >
-              <div className="bg-nude-50 p-6 border-b border-nude-100 flex justify-between items-start">
-                <h3 className="text-xl font-serif text-nude-900 flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-gold-500" />
-                  {appointment.modelName}
-                </h3>
+              <div className="bg-brand-black p-8 flex justify-between items-center">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-brand-pink/20 flex items-center justify-center">
+                    <Sparkles className="w-6 h-6 text-brand-pink" />
+                  </div>
+                  <h3 className="text-2xl font-serif text-white">
+                    {appointment.modelName}
+                  </h3>
+                </div>
                 {getStatusBadge(appointment.status)}
               </div>
-              <div className="p-6 space-y-4 flex-1">
-                <div className="flex items-center gap-3 text-nude-700">
-                  <Calendar className="w-5 h-5 text-gold-500" />
-                  <span className="font-medium">
-                    {new Date(appointment.date + 'T00:00:00').toLocaleDateString('pt-BR', {
-                      day: '2-digit', month: 'long', year: 'numeric'
-                    })}
-                  </span>
-                </div>
-                <div className="flex items-center gap-3 text-nude-700">
-                  <Clock className="w-5 h-5 text-gold-500" />
-                  <span className="font-medium">{appointment.time}</span>
+              
+              <div className="p-10 space-y-8 flex-1">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-4 text-brand-black">
+                    <div className="w-10 h-10 rounded-xl bg-nude-50 flex items-center justify-center text-brand-pink">
+                      <Calendar className="w-5 h-5" />
+                    </div>
+                    <span className="text-xl font-medium">
+                      {new Date(appointment.date + 'T00:00:00').toLocaleDateString('pt-BR', {
+                        day: '2-digit', month: 'long', year: 'numeric'
+                      })}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-4 text-brand-black">
+                    <div className="w-10 h-10 rounded-xl bg-nude-50 flex items-center justify-center text-brand-pink">
+                      <Clock className="w-5 h-5" />
+                    </div>
+                    <span className="text-xl font-medium">{appointment.time}</span>
+                  </div>
                 </div>
                 
-                <div className="pt-4 border-t border-nude-100 text-xs text-nude-400">
-                  Agendado em: {new Date(appointment.createdAt).toLocaleString('pt-BR')}
+                <div className="pt-6 border-t border-nude-100 flex items-center gap-3 text-xs text-nude-400 uppercase tracking-widest font-bold">
+                  <User className="w-3 h-3" />
+                  ID: {appointment.id.slice(0, 8)}
                 </div>
 
-                {canCancel(appointment) && (
-                  <div className="pt-4 mt-auto">
+                <div className="pt-4 mt-auto space-y-4">
+                  {canCancel(appointment) && (
                     <button
                       onClick={() => setCancelingId(appointment.id)}
-                      className="w-full flex items-center justify-center gap-2 bg-red-50 text-red-600 py-3 rounded-xl font-medium hover:bg-red-100 transition-colors border border-red-100"
+                      className="w-full flex items-center justify-center gap-3 bg-red-50 text-red-600 py-5 rounded-2xl font-bold hover:bg-red-100 transition-all border border-red-100"
                     >
-                      <X className="w-4 h-4" />
+                      <X className="w-5 h-5" />
                       Cancelar Agendamento
                     </button>
-                  </div>
-                )}
+                  )}
+
+                  {appointment.status === "confirmed" && (
+                    <button
+                      onClick={() => setReviewingAppointment(appointment)}
+                      className="w-full flex items-center justify-center gap-3 bg-brand-pink text-white py-5 rounded-2xl font-bold hover:bg-brand-pink-dark transition-all shadow-xl shadow-brand-pink/20"
+                    >
+                      <Star className="w-5 h-5 fill-white" />
+                      Avaliar Atendimento
+                    </button>
+                  )}
+                </div>
               </div>
             </motion.div>
           ))}
@@ -225,3 +377,4 @@ export default function MyBookings() {
     </div>
   );
 }
+

@@ -59,6 +59,19 @@
         "count": { "type": "number" }
       },
       "required": ["count"]
+    },
+    "Review": {
+      "title": "Review",
+      "description": "Client reviews",
+      "type": "object",
+      "properties": {
+        "clientName": { "type": "string" },
+        "rating": { "type": "number" },
+        "comment": { "type": "string" },
+        "approved": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["clientName", "rating", "approved", "createdAt"]
     }
   },
   "firestore": {
@@ -81,6 +94,10 @@
     "/daily_counts/{date}": {
       "schema": { "$ref": "#/entities/DailyCount" },
       "description": "Daily appointment counts"
+    },
+    "/reviews/{reviewId}": {
+      "schema": { "$ref": "#/entities/Review" },
+      "description": "Client reviews"
     }
   }
 }
